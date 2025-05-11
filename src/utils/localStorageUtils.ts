@@ -1,20 +1,24 @@
-export const getQueuedPayments = () => {
-  const payments = localStorage.getItem('offlinePaymentsQueue');
-  return payments ? JSON.parse(payments) : [];
+import { Payment } from '@/types/payment';
+import { 
+  getSecurePaymentQueue, 
+  setSecurePaymentQueue, 
+  addToSecurePaymentQueue, 
+  removeFromSecurePaymentQueue, 
+  clearSecurePaymentQueue 
+} from './secureStorage';
+
+export const getQueuedPayments = (): Payment[] => {
+  return getSecurePaymentQueue();
 };
 
-export const addPaymentToQueue = (payment) => {
-  const payments = getQueuedPayments();
-  payments.push(payment);
-  localStorage.setItem('offlinePaymentsQueue', JSON.stringify(payments));
+export const addPaymentToQueue = (payment: Payment): boolean => {
+  return addToSecurePaymentQueue(payment);
 };
 
-export const clearQueuedPayments = () => {
-  localStorage.removeItem('offlinePaymentsQueue');
+export const clearQueuedPayments = (): boolean => {
+  return clearSecurePaymentQueue();
 };
 
-export const removeProcessedPayment = (index) => {
-  const payments = getQueuedPayments();
-  payments.splice(index, 1);
-  localStorage.setItem('offlinePaymentsQueue', JSON.stringify(payments));
+export const removeProcessedPayment = (paymentId: string): boolean => {
+  return removeFromSecurePaymentQueue(paymentId);
 };

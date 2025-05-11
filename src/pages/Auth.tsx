@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { LogIn, UserPlus } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
+import { setSecureAuthData } from '@/utils/secureAuthStorage';
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -25,9 +26,9 @@ const Auth = () => {
   const [phone, setPhone] = React.useState('');
   const [registerUsername, setRegisterUsername] = React.useState('');
 
-  const API_BASE_URL = 'http://localhost:3000/api/auth';
+  const API_BASE_URL = 'https://upiconnect.onrender.com/api/auth';
 
-  const fetchUserProfile = async (authToken) => {
+  const fetchUserProfile = async (authToken: string) => {
     try {
       const response = await axios.get(`${API_BASE_URL}/current-user`, {
         headers: {
@@ -37,8 +38,8 @@ const Auth = () => {
 
       if (response.status === 200) {
         const userData = response.data.data;
-        // Store user data in localStorage or context as needed
-        localStorage.setItem('userData', JSON.stringify(userData));
+        // Store user data securely
+        setSecureAuthData(authToken, userData);
         return userData;
       }
     } catch (error) {
@@ -47,7 +48,7 @@ const Auth = () => {
     }
   };
 
-  const handleAuth = async (isSignUp) => {
+  const handleAuth = async (isSignUp: boolean) => {
     try {
       setLoading(true);
       const endpoint = isSignUp ? `${API_BASE_URL}/signup` : `${API_BASE_URL}/login`;
@@ -69,8 +70,6 @@ const Auth = () => {
       if (response.status === 200 || response.status === 201) {
         if (response.data.data?.authToken) {
           const authToken = response.data.data.authToken;
-          // Store auth token in localStorage
-          localStorage.setItem('data.authToken', authToken);
           
           // Login through context
           login(authToken);
