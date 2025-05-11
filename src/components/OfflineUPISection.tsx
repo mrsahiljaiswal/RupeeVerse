@@ -23,7 +23,12 @@ import { usePaymentRequest } from '@/hooks/usePaymentRequest';
 import { useTransactions } from '@/hooks/useTransactions';
 import TransactionHistory from './TransactionHistory';
 import { debounce } from 'lodash';
-import { getQueuedPayments, addPaymentToQueue, clearQueuedPayments, removeProcessedPayment } from '@/utils/localStorageUtils';
+import { 
+  getSecureQueuedPayments, 
+  addSecurePaymentToQueue, 
+  clearSecurePayments, 
+  removeSecurePayment 
+} from '@/utils/secureStorage';
 
 const LoadingSpinner = ({ className = "" }) => (
   <svg 
@@ -97,29 +102,32 @@ const OfflineUPISection = () => {
   const handleSendMoney = async () => {
     const paymentDetails = {
       amount: Number(amount),
-      recipient,
-      description,
-      timestamp: Date.now(),
+      payee: recipient,
+      note: description,
     };
 
-    setSendProcessing(true); // Start processing
+    setSendProcessing(true);
     try {
       if (!navigator.onLine) {
-        // User is offline, queue the payment
-        addPaymentToQueue(paymentDetails);
-        toast({
-          title: "Payment Queued",
-          description: "Your payment will be processed when you're back online.",
-          variant: "default",
-        });
+        // User is offline, queue the payment securely
+        const success = addSecurePaymentToQueue(paymentDetails);
+        if (success) {
+          toast({
+            title: "Payment Queued Securely",
+            description: "Your payment has been securely stored and will be processed when you're back online.",
+            variant: "default",
+          });
+        } else {
+          throw new Error("Failed to queue payment");
+        }
       } else {
         // User is online, process the payment immediately
-        const success = await sendPayment(paymentDetails.amount, paymentDetails.recipient, paymentDetails.description);
+        const success = await sendPayment(paymentDetails.amount, paymentDetails.payee, paymentDetails.note);
         if (success) {
           toast({
             title: "Payment Successful",
-            description: `Payment of ₹${paymentDetails.amount} to ${paymentDetails.recipient} has been processed.`,
-            variant: "success",
+            description: `Payment of ₹${paymentDetails.amount} to ${paymentDetails.payee} has been processed.`,
+            variant: "default",
           });
         } else {
           toast({
@@ -137,7 +145,7 @@ const OfflineUPISection = () => {
         variant: "destructive",
       });
     } finally {
-      setSendProcessing(false); // End processing
+      setSendProcessing(false);
       setShowSendDialog(false);
       resetForm();
     }
@@ -145,38 +153,34 @@ const OfflineUPISection = () => {
 
   // Function to process queued payments when back online
   const processQueuedPayments = useCallback(async () => {
-    // Prevent duplicate processing if already locked
     if (isProcessingQueue) return;
 
-    const queuedPayments = getQueuedPayments();
+    const queuedPayments = getSecureQueuedPayments();
     if (queuedPayments.length === 0) return;
 
-    setIsProcessingQueue(true); // Lock the queue
+    setIsProcessingQueue(true);
 
     for (const payment of queuedPayments) {
       try {
         // Process the payment
-        await sendPayment(payment.amount, payment.recipient, payment.description);
+        await sendPayment(payment.amount, payment.payee, payment.note);
 
         // Show success toast
         toast({
           title: "Payment Processed",
-          description: `Payment of ₹${payment.amount} to ${payment.recipient} has been processed.`,
-          variant: "success",
+          description: `Payment of ₹${payment.amount} to ${payment.payee} has been processed.`,
+          variant: "default",
         });
 
         // Remove the processed payment from the queue
-        const updatedQueue = getQueuedPayments().filter(
-          (queuedPayment) => queuedPayment.timestamp !== payment.timestamp
-        );
-        localStorage.setItem('offlinePaymentsQueue', JSON.stringify(updatedQueue));
+        removeSecurePayment(payment.timestamp);
       } catch (error) {
         console.error("Failed to process payment:", error);
 
         // Show failure toast
         toast({
           title: "Payment Failed",
-          description: `Failed to process payment of ₹${payment.amount} to ${payment.recipient}.`,
+          description: `Failed to process payment of ₹${payment.amount} to ${payment.payee}.`,
           variant: "destructive",
         });
 
@@ -185,7 +189,7 @@ const OfflineUPISection = () => {
       }
     }
 
-    setIsProcessingQueue(false); // Unlock the queue
+    setIsProcessingQueue(false);
   }, [isProcessingQueue, sendPayment, toast]);
 
   // Listen for online status changes

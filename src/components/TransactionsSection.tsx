@@ -40,7 +40,8 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
-const API_BASE_URL = 'http://localhost:3000';
+import { getSecureAuthData } from '@/utils/secureAuthStorage';
+const API_BASE_URL = 'https://upiconnect.onrender.com';
 type Transaction = {
   transactionId: string;
   amount: number;
@@ -232,9 +233,14 @@ const TransactionsSection = () => {
 
   const fetchTransactions = async () => {
     try {
+      const secureData = getSecureAuthData();
+      if (!secureData) {
+        throw new Error('Authentication token not found. Please login again.');
+      }
+
       const response = await fetch(`${API_BASE_URL}/api/transactions`, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('data.authToken')}`,
+          'Authorization': `Bearer ${secureData.token}`,
         },
       });
       const data = await response.json();
@@ -261,9 +267,14 @@ const TransactionsSection = () => {
 
   const fetchExpenses = async () => {
     try {
+      const secureData = getSecureAuthData();
+      if (!secureData) {
+        throw new Error('Authentication token not found. Please login again.');
+      }
+
       const response = await fetch(`${API_BASE_URL}/api/expenses`, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('data.authToken')}`,
+          'Authorization': `Bearer ${secureData.token}`,
         },
       });
       const data = await response.json();
@@ -431,6 +442,11 @@ const AddTransactionForm = ({ onSuccess }: { onSuccess: () => void }) => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
+      const secureData = getSecureAuthData();
+      if (!secureData) {
+        throw new Error('Authentication token not found. Please login again.');
+      }
+
       // Normalize category to lowercase for consistency
       const normalizedValues = {
         ...values,
@@ -441,7 +457,7 @@ const AddTransactionForm = ({ onSuccess }: { onSuccess: () => void }) => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('data.authToken')}`,
+          'Authorization': `Bearer ${secureData.token}`,
         },
         body: JSON.stringify(normalizedValues),
       });

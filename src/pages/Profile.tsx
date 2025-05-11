@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { ArrowLeft, Loader2, User, Mail, Hash } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
+import { getSecureAuthData } from '@/utils/secureAuthStorage';
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -14,9 +15,9 @@ const Profile = () => {
   const [loading, setLoading] = React.useState(false);
 
   React.useEffect(() => {
-    // Check if user data exists in localStorage
-    const userData = localStorage.getItem('userData');
-    if (!userData) {
+    // Check if user data exists in secure storage
+    const secureData = getSecureAuthData();
+    if (!secureData) {
       navigate('/auth');
     }
   }, [navigate]);
@@ -80,8 +81,8 @@ const Profile = () => {
                   <Hash className="h-6 w-6 text-primary" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-medium text-muted-foreground">User ID</h3>
-                  <p className="text-lg font-semibold">{user.userId}</p>
+                  <h3 className="text-sm font-medium text-muted-foreground">Balance</h3>
+                  <p className="text-lg font-semibold">₹{user.balance?.toFixed(2)}</p>
                 </div>
               </div>
 
