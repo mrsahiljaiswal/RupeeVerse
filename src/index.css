@@ -1,0 +1,105 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 260 25% 11%;
+    --foreground: 240 10% 95%;
+
+    --card: 260 25% 16%;
+    --card-foreground: 240 10% 95%;
+
+    --popover: 260 25% 16%;
+    --popover-foreground: 240 10% 95%;
+
+    --primary: 265 80% 75%;
+    --primary-foreground: 240 10% 95%;
+
+    --secondary: 260 15% 20%;
+    --secondary-foreground: 240 10% 95%;
+
+    --muted: 260 15% 25%;
+    --muted-foreground: 240 10% 80%;
+
+    --accent: 142 70% 40%;
+    --accent-foreground: 240 10% 95%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 240 10% 95%;
+
+    --border: 260 15% 20%;
+    --input: 260 15% 20%;
+    --ring: 142 70% 40%;
+
+    --radius: 1rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-inter antialiased;
+  }
+
+  .font-poppins {
+    font-family: 'Poppins', sans-serif;
+  }
+
+  .font-inter {
+    font-family: 'Inter', sans-serif;
+  }
+
+  .glass {
+    @apply backdrop-blur-xl bg-white/10 border border-white/10;
+  }
+
+  .card-gradient {
+    background: linear-gradient(215deg, rgba(155, 135, 245, 0.1) 0%, rgba(13, 16, 45, 0.4) 100%);
+    @apply backdrop-blur-lg border border-white/10;
+  }
+
+  .purple-gradient {
+    background: linear-gradient(135deg, #9b87f5 0%, #7E69AB 100%);
+    background-size: 200% 200%;
+  }
+
+  .green-gradient {
+    background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+    background-size: 200% 200%;
+  }
+
+  .dark-gradient {
+    background: linear-gradient(215deg, rgba(22, 20, 40, 0.8) 0%, rgba(13, 16, 45, 1) 100%);
+  }
+
+  .nav-link {
+    @apply relative px-4 py-2 rounded-lg transition-all duration-300 hover:text-primary;
+  }
+
+  .nav-link.active {
+    @apply text-primary;
+  }
+
+  .nav-link.active::after {
+    content: '';
+    @apply absolute bottom-0 left-1/2 w-1/2 h-0.5 bg-primary transform -translate-x-1/2;
+  }
+
+  .badge {
+    @apply px-2 py-1 text-xs font-medium rounded-full;
+  }
+
+  .badge-purple {
+    @apply bg-rupee/20 text-rupee;
+  }
+
+  .badge-green {
+    @apply bg-emerald/20 text-emerald;
+  }
+}

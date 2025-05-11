@@ -1,0 +1,119 @@
+/* Notification Animation Keyframes */
+@keyframes slideIn {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Notification Badge */
+.notification-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 6px;
+  border-radius: 9px;
+  background: linear-gradient(135deg, #9b87f5 0%, #7E69AB 100%);
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.2s ease-in-out;
+  font-family: 'Inter', sans-serif;
+}
+
+/* Notification Card */
+.notification-card {
+  animation: slideIn 0.3s ease-out;
+  transition: all 0.2s ease-in-out;
+  font-family: 'Inter', sans-serif;
+}
+
+.notification-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(155, 135, 245, 0.1);
+}
+
+/* Notification Popup */
+.notification-popup {
+  animation: fadeIn 0.2s ease-out;
+  font-family: 'Inter', sans-serif;
+}
+
+/* Payment Request Modal */
+.payment-request-modal {
+  animation: slideIn 0.3s ease-out;
+  font-family: 'Inter', sans-serif;
+}
+
+/* Mobile Responsive Styles */
+@media (max-width: 768px) {
+  .notification-card {
+    margin: 0 -16px;
+    border-radius: 0;
+  }
+
+  .notification-popup {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    border-radius: 0;
+  }
+}
+
+/* Premium Styling */
+.purple-gradient {
+  background: linear-gradient(135deg, #9b87f5 0%, #7E69AB 100%);
+  background-size: 200% 200%;
+  border: none;
+  color: white;
+}
+
+.purple-gradient:hover {
+  background: linear-gradient(135deg, #8b7ae5 0%, #6d5a9b 100%);
+}
+
+/* Micro-interactions */
+.notification-card button {
+  transition: all 0.2s ease-in-out;
+}
+
+.notification-card button:active {
+  transform: scale(0.95);
+}
+
+/* Scrollbar Styling */
+.notification-popup ::-webkit-scrollbar {
+  width: 8px;
+}
+
+.notification-popup ::-webkit-scrollbar-track {
+  background: rgba(155, 135, 245, 0.1);
+  border-radius: 4px;
+}
+
+.notification-popup ::-webkit-scrollbar-thumb {
+  background: rgba(155, 135, 245, 0.2);
+  border-radius: 4px;
+}
+
+.notification-popup ::-webkit-scrollbar-thumb:hover {
+  background: rgba(155, 135, 245, 0.3);
+} 
