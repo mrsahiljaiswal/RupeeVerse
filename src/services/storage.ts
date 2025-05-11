@@ -1,4 +1,6 @@
 import { Payment } from '../types/payment';
+import { getSecureAuthData, setSecureAuthData, removeSecureAuthData } from '@/utils/secureAuthStorage';
+import { getSecurePaymentQueue, setSecurePaymentQueue } from '@/utils/secureStorage';
 
 const STORAGE_KEYS = {
   PAYMENT_QUEUE: 'paymentQueue',
@@ -18,24 +20,24 @@ export class StorageService {
   }
 
   public getPaymentQueue(): Payment[] {
-    const queue = localStorage.getItem(STORAGE_KEYS.PAYMENT_QUEUE);
-    return queue ? JSON.parse(queue) : [];
+    return getSecurePaymentQueue();
   }
 
   public savePaymentQueue(queue: Payment[]): void {
-    localStorage.setItem(STORAGE_KEYS.PAYMENT_QUEUE, JSON.stringify(queue));
+    setSecurePaymentQueue(queue);
   }
 
   public getAuthToken(): string | null {
-    return localStorage.getItem(STORAGE_KEYS.AUTH_TOKEN);
+    const secureData = getSecureAuthData();
+    return secureData?.token || null;
   }
 
   public setAuthToken(token: string): void {
-    localStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, token);
+    setSecureAuthData({ token });
   }
 
   public removeAuthToken(): void {
-    localStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN);
+    removeSecureAuthData();
   }
 }
 
