@@ -1,40 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Globe } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { useLanguage } from '@/contexts/LanguageContext';
 import { useToast } from '@/hooks/use-toast';
 import SendMoneyDialog from '@/components/SendMoneyDialog';
 
 const HeroSection = () => {
-  const { language, setLanguage, translate } = useLanguage();
   const { toast } = useToast();
-  const [texts, setTexts] = useState({
-    offlineFirst: 'Offline-First Banking',
-    banking: 'Banking that works',
-    withoutInternet: 'without internet',
-    description: 'Secure transactions, easy loan applications, and financial learning - all accessible offline for rural communities.',
-    getStarted: 'Get Started',
-    learnMore: 'Learn More'
-  });
   const [showSendDialog, setShowSendDialog] = useState(false);
-
-  useEffect(() => {
-    const translateTexts = async () => {
-      const translatedTexts = await Promise.all(
-        Object.entries(texts).map(async ([key, value]) => [key, await translate(value)])
-      );
-      setTexts(Object.fromEntries(translatedTexts));
-    };
-
-    translateTexts();
-  }, [language]);
 
   const scrollToUPISection = () => {
     const section = document.querySelector('#offline-upi-section');
@@ -46,40 +19,8 @@ const HeroSection = () => {
     section?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const handleLanguageChange = async (newLang: 'en' | 'hi' | 'kn') => {
-    setLanguage(newLang);
-    toast({
-      title: "Language Changed",
-      description: `The website language has been changed to ${
-        newLang === 'en' ? 'English' : newLang === 'hi' ? 'Hindi' : 'Kannada'
-      }`,
-    });
-  };
-
   return (
     <section className="relative py-16 md:py-24 overflow-hidden">
-      <div className="absolute top-4 right-4 z-20">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="gap-2">
-              <Globe className="h-4 w-4" />
-              {language === 'en' ? 'English' : language === 'hi' ? 'हिंदी' : 'ಕನ್ನಡ'}
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuItem onClick={() => handleLanguageChange('en')}>
-              English
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => handleLanguageChange('hi')}>
-              हिंदी (Hindi)
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => handleLanguageChange('kn')}>
-              ಕನ್ನಡ (Kannada)
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-
       <div 
         className="absolute top-20 -right-24 w-64 h-64 bg-primary/20 rounded-full blur-3xl" 
         aria-hidden="true"
@@ -93,16 +34,16 @@ const HeroSection = () => {
         <div className="flex flex-col md:flex-row items-center gap-12 md:gap-16">
           <div className="flex-1 text-center md:text-left">
             <div className="inline-block mb-4 px-3 py-1 rounded-full bg-white/10 backdrop-blur-sm border border-white/10">
-              <span className="text-sm font-medium text-primary">{texts.offlineFirst}</span>
+              <span className="text-sm font-medium text-primary">Offline-First Banking</span>
             </div>
             
             <h1 className="font-poppins font-bold text-4xl md:text-5xl lg:text-6xl mb-6 leading-tight">
-              {texts.banking}
-              <span className="block text-primary">{texts.withoutInternet}</span>
+              Banking that works
+              <span className="block text-primary">without internet</span>
             </h1>
             
             <p className="text-lg text-muted-foreground mb-8 md:max-w-lg">
-              {texts.description}
+              Secure transactions, easy loan applications, and financial learning - all accessible offline for rural communities.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
@@ -110,7 +51,7 @@ const HeroSection = () => {
                 className="purple-gradient text-lg px-8 py-6 hover:animate-gradient-shift"
                 onClick={scrollToUPISection}
               >
-                {texts.getStarted}
+                Get Started
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
               <Button 
@@ -118,7 +59,7 @@ const HeroSection = () => {
                 className="text-lg px-8 py-6 border-white/10 hover:bg-white/5"
                 onClick={scrollToTransactionsSection}
               >
-                {texts.learnMore}
+                Learn More
               </Button>
             </div>
           </div>
@@ -147,9 +88,7 @@ const HeroSection = () => {
                     >
                       Send Money
                     </Button>
-                    <Button variant="outline" className="flex-1 border-white/10 hover:bg-white/5"
-                      
-                    >
+                    <Button variant="outline" className="flex-1 border-white/10 hover:bg-white/5">
                       Request
                     </Button>
                   </div>
