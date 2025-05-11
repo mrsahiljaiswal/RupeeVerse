@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Button } from '@/components/ui/button';
-import { Home, Book, BarChart, MessageSquare, Menu, X, User, LogOut } from 'lucide-react';
+import { Home, Book, BarChart, MessageSquare, Menu, X, User, LogOut, Bell } from 'lucide-react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -18,6 +18,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { notificationService, Notification } from '@/services/notificationService';
 import NotificationPopup from './NotificationPopup';
+import { getSecureAuthData } from '@/utils/secureAuthStorage';
 
 const NavItem = ({ 
   icon: Icon, 
@@ -56,7 +57,7 @@ const Navbar = () => {
   const [localUserData, setLocalUserData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const API_BASE_URL = 'http://localhost:3000';
+  const API_BASE_URL = 'https://upiconnect.onrender.com';
 
   // Set active page based on current location
   const activePage = location.pathname === '/' ? 'home' : 
@@ -74,11 +75,10 @@ const Navbar = () => {
   useEffect(() => {
     const checkAuthState = async () => {
       try {
-        const token = localStorage.getItem('data.authToken');
-        const userData = localStorage.getItem('userData');
+        const secureData = getSecureAuthData();
         
-        if (token && userData) {
-          setLocalUserData(JSON.parse(userData));
+        if (secureData) {
+          setLocalUserData(secureData.userData);
         } else {
           setLocalUserData(null);
         }
@@ -91,7 +91,7 @@ const Navbar = () => {
     };
 
     checkAuthState();
-  }, [isAuthenticated]); // Ensure `isAuthenticated` is defined
+  }, [isAuthenticated]);
 
   const handleLogout = async () => {
     try {
@@ -141,8 +141,8 @@ const Navbar = () => {
     if (!transactionId) return;
 
     try {
-      const token = localStorage.getItem('data.authToken');
-      if (!token) {
+      const secureData = getSecureAuthData();
+      if (!secureData) {
         console.error('Auth token is missing');
         return;
       }
@@ -150,7 +150,7 @@ const Navbar = () => {
       // Send accept request to the server
       await axios.post(`${API_BASE_URL}/api/requests/accept/${transactionId}`, { transactionId }, {
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${secureData.token}`,
         },
       });
 
@@ -183,8 +183,8 @@ const Navbar = () => {
     if (!transactionId) return;
 
     try {
-      const token = localStorage.getItem('data.authToken');
-      if (!token) {
+      const secureData = getSecureAuthData();
+      if (!secureData) {
         console.error('Auth token is missing');
         return;
       }
@@ -192,7 +192,7 @@ const Navbar = () => {
       // Send reject request to the server
       await axios.post(`${API_BASE_URL}/api/requests/reject/${transactionId}`, { transactionId }, {
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${secureData.token}`,
         },
       });
 
@@ -272,47 +272,98 @@ const Navbar = () => {
     );
   };
 
-  const renderMobileAuthButtons = () => {
-    if (isLoading) {
-      return null;
-    }
-
-    if (localUserData) {
-      return (
-        <div className="space-y-4">
-          <div className="flex items-center space-x-2 p-2">
-            <User className="h-5 w-5" />
-            <div className="flex flex-col">
-              <span className="text-sm font-medium">{localUserData.username}</span>
-              <span className="text-xs text-muted-foreground">{localUserData.email}</span>
-            </div>
-          </div>
-          <Button 
-            className="purple-gradient w-full" 
-            onClick={() => navigate('/profile')}
-          >
-            <User className="mr-2 h-4 w-4" />
-            Profile
-          </Button>
-          <Button 
-            variant="destructive" 
-            className="w-full"
-            onClick={handleLogout}
-          >
-            <LogOut className="mr-2 h-4 w-4" />
-            Logout
-          </Button>
-        </div>
-      );
-    }
+  const renderMobileMenu = () => {
+    if (!isOpen) return null;
 
     return (
-      <Button 
-        className="purple-gradient w-full" 
-        onClick={() => navigate('/auth')}
-      >
-        Login
-      </Button>
+      <div className="fixed inset-0 top-[72px] bg-background z-40">
+        <div className="flex flex-col p-6 space-y-6">
+          {/* Navigation Items */}
+          <nav className="space-y-4">
+            {navItems.map((item) => (
+              <NavItem 
+                key={item.id}
+                icon={item.icon} 
+                text={item.text} 
+                active={activePage === item.id}
+                to={item.to}
+              />
+            ))}
+          </nav>
+
+          {/* Divider */}
+          <div className="border-t border-white/10 my-4" />
+
+          {/* Auth Section */}
+          {isAuthenticated ? (
+            <div className="space-y-4">
+              {/* User Profile Section */}
+              <div className="flex items-center space-x-3 p-3 bg-white/5 rounded-lg">
+                <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+                  <User className="w-5 h-5 text-primary" />
+                </div>
+                <div className="flex-1">
+                  <p className="font-medium">{localUserData?.username}</p>
+                  <p className="text-sm text-muted-foreground">{localUserData?.email}</p>
+                </div>
+              </div>
+
+              {/* Profile & Logout Buttons */}
+              <Button 
+                className="w-full justify-start" 
+                variant="ghost"
+                onClick={() => {
+                  navigate('/profile');
+                  setIsOpen(false);
+                }}
+              >
+                <User className="mr-2 h-4 w-4" />
+                Profile
+              </Button>
+
+              <Button 
+                className="w-full justify-start" 
+                variant="ghost"
+                onClick={() => {
+                  handleLogout();
+                  setIsOpen(false);
+                }}
+              >
+                <LogOut className="mr-2 h-4 w-4" />
+                Logout
+              </Button>
+
+              {/* Notifications Button */}
+              <Button
+                variant="outline"
+                className="w-full justify-start"
+                onClick={() => {
+                  setIsNotificationPopupOpen(true);
+                  setIsOpen(false);
+                }}
+              >
+                <Bell className="mr-2 h-4 w-4" />
+                Notifications
+                {notifications.length > 0 && (
+                  <span className="ml-2 px-2 py-0.5 bg-red-500 text-white text-xs rounded-full">
+                    {notifications.length}
+                  </span>
+                )}
+              </Button>
+            </div>
+          ) : (
+            <Button 
+              className="w-full purple-gradient" 
+              onClick={() => {
+                navigate('/auth');
+                setIsOpen(false);
+              }}
+            >
+              Login
+            </Button>
+          )}
+        </div>
+      </div>
     );
   };
 
@@ -344,30 +395,34 @@ const Navbar = () => {
 
         {isMobile ? (
           <>
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              onClick={() => setIsOpen(!isOpen)}
-              aria-label="Toggle menu"
-            >
-              {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-            </Button>
+            <div className="flex items-center gap-2">
+              {/* Notification Button for Mobile */}
+              {isAuthenticated && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setIsNotificationPopupOpen(true)}
+                >
+                  <Bell className="h-5 w-5" />
+                  {notifications.length > 0 && (
+                    <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+                      {notifications.length}
+                    </span>
+                  )}
+                </Button>
+              )}
+              
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={() => setIsOpen(!isOpen)}
+                aria-label="Toggle menu"
+              >
+                {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              </Button>
+            </div>
             
-            {isOpen && (
-              <div className="fixed inset-0 top-[72px] bg-background z-40">
-                <nav className="flex flex-col p-6 space-y-6">
-                  {navItems.map((item) => (
-                    <NavItem 
-                      key={item.id}
-                      icon={item.icon} 
-                      text={item.text} 
-                      active={activePage === item.id}
-                      to={item.to}
-                    />
-                  ))}
-                </nav>
-              </div>
-            )}
+            {renderMobileMenu()}
           </>
         ) : (
           <div className="flex items-center gap-6">
