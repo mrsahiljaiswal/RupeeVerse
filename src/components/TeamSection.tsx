@@ -14,21 +14,23 @@ const TeamSection = () => {
     {
       name: "Akhil Kumar Singh",
       bio: "",
+      imageUrl:"/akhil.png",
     },
     {
       name: "Aayushmaan Purohit",
       bio: "",
+      imageUrl:"/aayushman.png"
     },
     {
       name: "Vishal Dhamu",
       bio: "",
-      imageUrl: "/images/vishal.jpg",
+      imageUrl: "/vishal.jpg",
       
     },
     {
       name: "Sahil Jaiswal",
       bio: "",
-      imageUrl: "/images/sahil.jpg",
+      imageUrl: "/sahil.png",
     }
   ];
 
