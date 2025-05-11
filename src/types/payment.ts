@@ -3,12 +3,17 @@ export type PaymentStatus = 'PENDING' | 'PROCESSING' | 'COMPLETED' | 'FAILED';
 
 export interface Payment {
   id: string;
-  type: PaymentType;
   amount: number;
-  recipientId: string;
+  payee: string;
+  payer: string;
+  note?: string;
   timestamp: number;
-  status: PaymentStatus;
-  metadata?: Record<string, any>;
+  status: 'pending' | 'completed' | 'failed';
+  synced: boolean;
+  reference?: string;
+  type?: 'online' | 'offline';
+  category?: string;
+  paymentMode?: 'online' | 'offline';
 }
 
 export interface QueueStatus {
