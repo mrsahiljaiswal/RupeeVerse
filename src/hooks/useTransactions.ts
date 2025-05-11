@@ -1,18 +1,19 @@
 import { useState, useEffect } from 'react';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
+import { getSecureAuthData } from '@/utils/secureAuthStorage';
 
 interface Transaction {
-  transactionId: string;
+  _id: string;
   amount: number;
-  type: 'debited' | 'credited';
-  note: string;
+  type: string;
   status: string;
   sender: string;
-  receiver: string;
+  recipient: string;
+  note: string;
   transactionDate: string;
 }
 
-const API_BASE_URL = 'http://localhost:3000';
+const API_BASE_URL = 'https://upiconnect.onrender.com';
 
 export const useTransactions = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -24,14 +25,14 @@ export const useTransactions = () => {
     setLoading(true);
     setError(null);
     try {
-      const authData = localStorage.getItem('data.authToken');
-      if (!authData) {
+      const secureData = getSecureAuthData();
+      if (!secureData) {
         throw new Error('Authentication token not found. Please login again.');
       }
 
       const response = await fetch(`${API_BASE_URL}/api/transactions`, {
         headers: {
-          'Authorization': `Bearer ${authData}`,
+          'Authorization': `Bearer ${secureData.token}`,
         },
       });
 

@@ -1,22 +1,21 @@
 import { useState } from 'react';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
+import { getSecureAuthData } from '@/utils/secureAuthStorage';
 
 interface PaymentRequestResponse {
   status: string;
   message: string;
   data: {
-    requester: string;
-    recipient: string;
+    transactionId: string;
     amount: number;
+    recipient: string;
     note: string;
-    status: 'pending' | 'accepted' | 'rejected';
-    _id: string;
+    status: string;
     createdAt: string;
   };
-  timestamp: string;
 }
 
-const API_BASE_URL = 'http://localhost:3000';
+const API_BASE_URL = 'https://upiconnect.onrender.com';
 
 export const usePaymentRequest = () => {
   const [processing, setProcessing] = useState(false);
@@ -34,8 +33,8 @@ export const usePaymentRequest = () => {
 
     setProcessing(true);
     try {
-      const authData = localStorage.getItem('data.authToken');
-      if (!authData) {
+      const secureData = getSecureAuthData();
+      if (!secureData) {
         throw new Error('Authentication token not found. Please login again.');
       }
 
@@ -43,7 +42,7 @@ export const usePaymentRequest = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${authData}`,
+          'Authorization': `Bearer ${secureData.token}`,
         },
         body: JSON.stringify({
           amount,
