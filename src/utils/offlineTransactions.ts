@@ -1,5 +1,8 @@
 // Utility functions for handling offline UPI transactions
 
+import { getSecureAuthData } from '@/utils/secureAuthStorage';
+import { getSecurePaymentQueue, setSecurePaymentQueue } from '@/utils/secureStorage';
+
 // Generate a UUID-like ID without external dependencies
 const generateUUID = () => {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
@@ -24,8 +27,7 @@ export type OfflineTransaction = {
 // Get all stored offline transactions
 export const getOfflineTransactions = (): OfflineTransaction[] => {
   try {
-    const stored = localStorage.getItem('offlineTransactions');
-    return stored ? JSON.parse(stored) : [];
+    return getSecurePaymentQueue();
   } catch (error) {
     console.error('Failed to retrieve offline transactions:', error);
     return [];
@@ -45,7 +47,7 @@ export const saveOfflineTransaction = (transaction: Omit<OfflineTransaction, 'id
     };
     
     transactions.push(newTransaction);
-    localStorage.setItem('offlineTransactions', JSON.stringify(transactions));
+    setSecurePaymentQueue(transactions);
     return newTransaction;
   } catch (error) {
     console.error('Failed to save offline transaction:', error);
@@ -65,7 +67,7 @@ export const updateTransactionStatus = (
       tx.id === id ? { ...tx, status, synced } : tx
     );
     
-    localStorage.setItem('offlineTransactions', JSON.stringify(updatedTransactions));
+    setSecurePaymentQueue(updatedTransactions);
     return updatedTransactions.find(tx => tx.id === id);
   } catch (error) {
     console.error('Failed to update transaction status:', error);
@@ -99,14 +101,12 @@ const generateReferenceCode = () => {
   return generateUUID().substring(0, 8).toUpperCase();
 };
 
-// Get user's UPI ID from localStorage or use a default
+// Get user's UPI ID from secure storage or use a default
 const getUserUpiId = () => {
   try {
-    // In a real app, this would come from the user's profile
-    const userProfile = localStorage.getItem('userProfile');
-    if (userProfile) {
-      const profile = JSON.parse(userProfile);
-      return profile.upiId || 'vishakhagarwal2002@okicici';
+    const secureData = getSecureAuthData();
+    if (secureData?.upiId) {
+      return secureData.upiId;
     }
   } catch (error) {
     console.error('Error getting user UPI ID:', error);
@@ -128,7 +128,7 @@ export const generateOfflinePaymentQR = (amount: number, description: string) =>
     timestamp,
     expiry,
     reference: referenceCode,
-    receiver: userUpiId, // In a real app, this would be the user's UPI ID
+    receiver: userUpiId,
   };
   
   // Generate a real UPI QR code that follows the UPI spec
@@ -198,6 +198,6 @@ export const verifyAndCompleteTransaction = async (transactionId: string): Promi
       } catch (error) {
         reject(error);
       }
-    }, 1500); // Simulate verification delay
+    }, 2000);
   });
 };
