@@ -24,7 +24,7 @@ const Index = () => {
         <OfflineUPISection />
         <FinLearnSection />
         <RupeeAISection />
-        <TeamSection />
+        {/* <TeamSection /> */}
         <CTASection />
       </main>
       <Footer />
