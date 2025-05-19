@@ -136,7 +136,7 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     try {
       // TODO: Replace with actual API call
-      const response = await fetch('http://localhost:3000/api/chat', {
+      const response = await fetch('https://upiconnect.onrender.com/api/chat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

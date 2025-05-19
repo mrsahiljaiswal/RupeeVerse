@@ -26,7 +26,7 @@ const Auth = () => {
   const [phone, setPhone] = React.useState('');
   const [registerUsername, setRegisterUsername] = React.useState('');
 
-  const API_BASE_URL = 'http://localhost:3000/api/auth';
+  const API_BASE_URL = 'https://upiconnect.onrender.com/api/auth';
 
   const fetchUserProfile = async (authToken: string) => {
     try {

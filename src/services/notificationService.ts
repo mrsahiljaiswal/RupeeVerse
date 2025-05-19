@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { getSecureAuthData } from '@/utils/secureAuthStorage';
 
-const API_BASE_URL = 'http://localhost:3000';
+const API_BASE_URL = 'https://upiconnect.onrender.com';
 
 export interface Notification {
   _id: string;

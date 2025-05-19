@@ -16,7 +16,7 @@ interface PaymentResponse {
   timestamp: string;
 }
 
-const API_BASE_URL = 'http://localhost:3000'; // Update this with your actual API base URL
+const API_BASE_URL = 'https://upiconnect.onrender.com'; // Update this with your actual API base URL
 
 export const usePayment = () => {
   const [processing, setProcessing] = useState(false);

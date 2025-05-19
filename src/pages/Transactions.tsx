@@ -99,7 +99,7 @@ const TransactionsList = () => {
         }
 
         console.log('Fetching transactions from API...'); // Debug log
-        const response = await fetch('http://localhost:3000/api/transactions', {
+        const response = await fetch('https://upiconnect.onrender.com/api/transactions', {
           headers: {
             'Authorization': `Bearer ${secureData.token}`
           }
@@ -301,7 +301,7 @@ const Transactions = () => {
       }
 
       console.log('Fetching balance...'); // Debug log
-      const response = await fetch('http://localhost:3000/api/balance', {
+      const response = await fetch('https://upiconnect.onrender.com/api/balance', {
         headers: {
           'Authorization': `Bearer ${secureData.token}`
         }

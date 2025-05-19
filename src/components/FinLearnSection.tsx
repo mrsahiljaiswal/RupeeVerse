@@ -48,7 +48,7 @@ const FinLearnSection = () => {
       }
 
       try {
-        const response = await fetch('http://localhost:3000/api/finlearn/progress', {
+        const response = await fetch('https://upiconnect.onrender.com/api/finlearn/progress', {
           headers: {
             'Authorization': `Bearer ${secureData.token}`
           }

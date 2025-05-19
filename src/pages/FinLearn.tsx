@@ -487,7 +487,7 @@ const ArticleRecommendations = ({ currentArticle, onSelect }: {
 
 // Base URL configuration
 const API_CONFIG = {
-  BASE_URL: 'http://localhost:3000', // Change this to your actual API base URL
+  BASE_URL: 'https://upiconnect.onrender.com', // Change this to your actual API base URL
   ENDPOINTS: {
     FINLEARN: {
       PROGRESS: '/api/finlearn/progress',

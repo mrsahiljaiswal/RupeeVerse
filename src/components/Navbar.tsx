@@ -57,7 +57,7 @@ const Navbar = () => {
   const [localUserData, setLocalUserData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const API_BASE_URL = 'http://localhost:3000';
+  const API_BASE_URL = 'https://upiconnect.onrender.com';
 
   // Set active page based on current location
   const activePage = location.pathname === '/' ? 'home' : 

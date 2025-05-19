@@ -43,7 +43,7 @@ import * as z from 'zod';
 import { getSecureAuthData } from '@/utils/secureAuthStorage';
 import SendMoneyDialog from '@/components/SendMoneyDialog';
 
-const API_BASE_URL = 'http://localhost:3000';
+const API_BASE_URL = 'https://upiconnect.onrender.com';
 type Transaction = {
   transactionId: string;
   amount: number;

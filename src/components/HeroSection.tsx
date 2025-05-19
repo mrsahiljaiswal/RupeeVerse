@@ -35,7 +35,7 @@ const HeroSection = () => {
       }
 
       console.log('Fetching balance...'); // Debug log
-      const response = await fetch('http://localhost:3000/api/balance', {
+      const response = await fetch('https://upiconnect.onrender.com/api/balance', {
         headers: {
           'Authorization': `Bearer ${secureData.token}`
         }

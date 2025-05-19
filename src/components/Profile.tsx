@@ -18,7 +18,7 @@ const Profile = () => {
       const secureData = await getSecureAuthData();
       if (!secureData?.token) return;
 
-      const response = await axios.get('http://localhost:3000/api/auth/current-user', {
+      const response = await axios.get('https://upiconnect.onrender.com/api/auth/current-user', {
         headers: {
           Authorization: `Bearer ${secureData.token}`
         }
