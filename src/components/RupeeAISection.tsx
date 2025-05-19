@@ -12,9 +12,7 @@ const RupeeAISection = () => {
           <h2 className="font-poppins font-bold text-3xl md:text-4xl mb-4">
             Meet <span className="text-primary">Rupee AI</span>, Your Financial Assistant
           </h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto text-lg">
-            Talk to Rupee AI using voice commands for financial advice and help with transactions, even offline.
-          </p>
+         
         </div>
         
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
@@ -26,7 +24,6 @@ const RupeeAISection = () => {
                 </div>
                 <div>
                   <h3 className="font-medium">Rupee AI</h3>
-                  <p className="text-xs text-muted-foreground">Offline Assistant</p>
                 </div>
               </div>
               
@@ -58,9 +55,7 @@ const RupeeAISection = () => {
             </div>
             
             <div className="flex gap-3 mt-4">
-              <Button variant="outline" className="flex-1 border-white/10 bg-white/5 hover:bg-white/10">
-                <Mic className="w-4 h-4 mr-2" /> Voice
-              </Button>
+              
               <div className="relative flex-1 flex items-center">
                 <input 
                   type="text" 
@@ -72,49 +67,7 @@ const RupeeAISection = () => {
             </div>
           </div>
           
-          <div className="space-y-6">
-            <h3 className="font-poppins font-semibold text-2xl">What can Rupee AI do?</h3>
-            
-            <div className="space-y-4">
-              <div className="flex gap-4">
-                <div className="w-10 h-10 rounded-full bg-primary/20 text-primary flex flex-shrink-0 items-center justify-center">
-                  <Mic className="w-5 h-5" />
-                </div>
-                <div>
-                  <h4 className="font-medium text-lg">Voice Commands</h4>
-                  <p className="text-muted-foreground">Control your banking with simple voice commands in your local language.</p>
-                </div>
-              </div>
-              
-              <div className="flex gap-4">
-                <div className="w-10 h-10 rounded-full bg-emerald/20 text-emerald flex flex-shrink-0 items-center justify-center">
-                  <VolumeX className="w-5 h-5" />
-                </div>
-                <div>
-                  <h4 className="font-medium text-lg">Works Offline</h4>
-                  <p className="text-muted-foreground">Get help with transactions and information even without internet connectivity.</p>
-                </div>
-              </div>
-              
-              <div className="flex gap-4">
-                <div className="w-10 h-10 rounded-full bg-primary/20 text-primary flex flex-shrink-0 items-center justify-center">
-                  <MessageSquare className="w-5 h-5" />
-                </div>
-                <div>
-                  <h4 className="font-medium text-lg">Financial Advice</h4>
-                  <p className="text-muted-foreground">Receive personalized financial guidance based on your spending habits and uploaded documents.</p>
-                </div>
-              </div>
-            </div>
-            
-            <div className="pt-6">
-              <Link to="/rupee-ai">
-                <Button className="purple-gradient">
-                  Try Rupee AI Now
-                </Button>
-              </Link>
-            </div>
-          </div>
+        
         </div>
       </div>
     </section>

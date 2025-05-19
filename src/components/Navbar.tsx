@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Button } from '@/components/ui/button';
-import { Home, Book, BarChart, MessageSquare, Menu, X, User, LogOut, Bell } from 'lucide-react';
+import { Home, Book, BarChart, MessageSquare, Menu, X, User, LogOut, Bell, MapPin } from 'lucide-react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -57,19 +57,21 @@ const Navbar = () => {
   const [localUserData, setLocalUserData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const API_BASE_URL = 'https://upiconnect.onrender.com';
+  const API_BASE_URL = 'http://localhost:3000';
 
   // Set active page based on current location
   const activePage = location.pathname === '/' ? 'home' : 
                     location.pathname === '/transactions' ? 'transactions' :
                     location.pathname === '/finlearn' ? 'finlearn' :
-                    location.pathname === '/rupee-ai' ? 'ai' : '';
+                    location.pathname === '/rupee-ai' ? 'ai' :
+                    location.pathname === '/atm-locator' ? 'atm' : '';
 
   const navItems = [
     { icon: Home, text: "Home", id: "home", to: "/" },
     { icon: BarChart, text: "Transactions", id: "transactions", to: "/transactions" },
     { icon: Book, text: "FinLearn", id: "finlearn", to: "/finlearn" },
     { icon: MessageSquare, text: "Rupee AI", id: "ai", to: "/rupee-ai" },
+    { icon: MapPin, text: "ATM Locator", id: "atm", to: "/atm-locator" },
   ];
 
   useEffect(() => {
@@ -344,9 +346,9 @@ const Navbar = () => {
               >
                 <Bell className="mr-2 h-4 w-4" />
                 Notifications
-                {notifications.length > 0 && (
+                {notifications.filter(n => !n.seen).length > 0 && (
                   <span className="ml-2 px-2 py-0.5 bg-red-500 text-white text-xs rounded-full">
-                    {notifications.length}
+                    {notifications.filter(n => !n.seen).length}
                   </span>
                 )}
               </Button>
@@ -402,11 +404,12 @@ const Navbar = () => {
                   variant="ghost"
                   size="icon"
                   onClick={() => setIsNotificationPopupOpen(true)}
+                  className="relative"
                 >
                   <Bell className="h-5 w-5" />
-                  {notifications.length > 0 && (
+                  {notifications.filter(n => !n.seen).length > 0 && (
                     <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
-                      {notifications.length}
+                      {notifications.filter(n => !n.seen).length}
                     </span>
                   )}
                 </Button>
@@ -446,10 +449,11 @@ const Navbar = () => {
                   className="relative"
                   onClick={() => setIsNotificationPopupOpen(true)}
                 >
+                  <Bell className="h-5 w-5 mr-2" />
                   Notifications
-                  {notifications.length > 0 && (
+                  {notifications.filter(n => !n.seen).length > 0 && (
                     <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
-                      {notifications.length}
+                      {notifications.filter(n => !n.seen).length}
                     </span>
                   )}
                 </Button>

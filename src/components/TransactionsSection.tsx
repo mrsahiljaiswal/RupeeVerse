@@ -41,7 +41,9 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { getSecureAuthData } from '@/utils/secureAuthStorage';
-const API_BASE_URL = 'https://upiconnect.onrender.com';
+import SendMoneyDialog from '@/components/SendMoneyDialog';
+
+const API_BASE_URL = 'http://localhost:3000';
 type Transaction = {
   transactionId: string;
   amount: number;
@@ -229,6 +231,7 @@ const TransactionsSection = () => {
   const [expenseData, setExpenseData] = useState<ExpenseData | null>(null);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showSendDialog, setShowSendDialog] = useState(false);
   const { toast } = useToast();
 
   const fetchTransactions = async () => {
@@ -420,11 +423,16 @@ const TransactionsSection = () => {
                 <p className="text-muted-foreground">Use our peer-to-peer feature to transfer funds locally.</p>
               </div>
               
-              <Button className="green-gradient">Try Now</Button>
+              <Button className="green-gradient"  onClick={() => setShowSendDialog(true)}>Try Now</Button>
             </div>
           </div>
         </div>
       </div>
+      
+      <SendMoneyDialog 
+        open={showSendDialog} 
+        onOpenChange={setShowSendDialog} 
+      />
     </section>
   );
 };

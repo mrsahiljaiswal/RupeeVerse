@@ -111,33 +111,33 @@ const getUserUpiId = () => {
   } catch (error) {
     console.error('Error getting user UPI ID:', error);
   }
-  return 'vishakhagarwal2002@okicici'; // Default UPI ID
+  return 'sahiljaiswal757@oksbi'; 
 };
 
 // Create a QR code for offline payment
-export const generateOfflinePaymentQR = (amount: number, description: string) => {
-  // Create payment info with additional security
+export const generateOfflinePaymentQR = (amount: number, description: string, recipient: string) => {
+  if (!recipient || recipient.trim() === '') {
+    throw new Error('Recipient username is required to generate the QR code');
+  }
+
   const referenceCode = generateReferenceCode();
   const timestamp = Date.now();
   const expiry = timestamp + 1000 * 60 * 15; // 15 minutes expiry
-  const userUpiId = getUserUpiId();
-  
+
   const paymentInfo = {
     amount,
     description,
     timestamp,
     expiry,
     reference: referenceCode,
-    receiver: userUpiId,
+    receiver: recipient, // Use the recipient's username as the UPI ID
   };
-  
-  // Generate a real UPI QR code that follows the UPI spec
-  // https://developers.npci.org.in/doc-detail/9
-  const upiUrl = `upi://pay?pa=${encodeURIComponent(userUpiId)}&pn=${encodeURIComponent('RupeeVerse')}&am=${amount}&tn=${encodeURIComponent(description)}&tr=${referenceCode}&cu=INR`;
-  
+
+  const upiUrl = `upi://pay?pa=${encodeURIComponent(recipient)}&pn=${encodeURIComponent('RupeeVerse')}&am=${amount}&tn=${encodeURIComponent(description)}&tr=${referenceCode}&cu=INR`;
+
   return {
     qrData: upiUrl,
-    paymentInfo
+    paymentInfo,
   };
 };
 

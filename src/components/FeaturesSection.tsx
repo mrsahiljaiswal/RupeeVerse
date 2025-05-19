@@ -37,9 +37,9 @@ const FeatureCard = ({ icon: Icon, title, description, variant, className, index
 
 const FeaturesSection = () => {
   const features = [
-    {
+   {
       icon: Wifi,
-      title: 'Offline-First',
+      title: 'Hybrid-First',
       description: 'Access core banking features even without internet connection, perfect for rural areas.',
       variant: 'purple' as const,
     },
@@ -58,7 +58,7 @@ const FeaturesSection = () => {
     {
       icon: MessageSquare,
       title: 'Rupee AI',
-      description: 'Your personal finance assistant powered by AI, works offline with voice commands.',
+      description: 'Your personal finance assistant powered by RupeeVerse AI.',
       variant: 'green' as const,
     },
   ];

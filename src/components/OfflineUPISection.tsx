@@ -264,7 +264,7 @@ const OfflineUPISection = () => {
           <div className="flex-1 text-center lg:text-left">
             <div className="inline-block mb-4 px-3 py-1 rounded-full bg-white/10 backdrop-blur-sm border border-white/10">
               <span className="text-sm font-medium text-primary flex items-center gap-2">
-                <Wifi className="h-4 w-4" /> Offline Mode
+                <Wifi className="h-4 w-4" /> Hybrid Mode
               </span>
             </div>
             
@@ -332,10 +332,10 @@ const OfflineUPISection = () => {
                     3
                   </div>
                   <div>
-                    <h4 className="font-medium mb-1">Locate Bank & ATMs</h4>
+                    <h4 className="font-medium mb-1">Payment Processed</h4>
                     
                     <p className="text-sm text-muted-foreground">
-                      Find the nearest bank or ATM using our map integration, perfect for rural areas.
+                      Payment is processed when you're back online
                     </p>
                   </div>
                 </div>
@@ -362,7 +362,7 @@ const OfflineUPISection = () => {
               <div className="w-10 h-10 flex items-center justify-center rounded-full bg-emerald/20 text-emerald">
                 <ArrowDownLeft className="h-5 w-5" />
               </div>
-              <p className="text-sm font-medium">Received ₹500 <span className="text-xs text-emerald">Offline</span></p>
+              <p className="text-sm font-medium">Received ₹500 <span className="text-xs text-emerald"></span></p>
             </div>
           </div>
         </div>
@@ -490,13 +490,13 @@ const OfflineUPISection = () => {
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="recipient">Recipient Username</Label>
+              <Label htmlFor="recipient">UPI ID</Label>
               <Input
                 id="recipient"
                 value={recipient}
                 onChange={(e) => setRecipient(e.target.value)}
                 className="bg-white/5 border-white/10"
-                placeholder="Enter recipient username"
+                placeholder="Enter UPI ID (e.g., username@bank)"
                 disabled={requestProcessing}
               />
             </div>
@@ -513,6 +513,29 @@ const OfflineUPISection = () => {
               />
             </div>
             
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full border-white/10"
+              onClick={() => {
+                if (amount && recipient) {
+                  // Create UPI payment URL using username as UPI ID
+                  const upiUrl = `upi://pay?pa=${recipient}&pn=${recipient.split('@')[0]}&am=${amount}&cu=INR&tn=${encodeURIComponent(description || "Payment Request")}`;
+                  setQrData(upiUrl);
+                } else {
+                  toast({
+                    title: "Missing Information",
+                    description: "Please fill in amount and UPI ID fields",
+                    variant: "destructive",
+                  });
+                }
+              }}
+              disabled={requestProcessing}
+            >
+              <QrCode className="w-4 h-4 mr-2" />
+              Generate UPI QR
+            </Button>
+            
             {qrData && (
               <div className="p-4 bg-white rounded-lg flex flex-col items-center justify-center">
                 <div className="text-center">
@@ -524,14 +547,10 @@ const OfflineUPISection = () => {
                     bgColor="#FFFFFF"
                     fgColor="#000000"
                   />
-                  <p className="text-black text-xs mt-2">Scan to pay ₹{amount}</p>
-                  {paymentInfo && paymentInfo.reference && (
-                    <p className="text-black text-xs">Ref: {paymentInfo.reference}</p>
-                  )}
-                  {paymentInfo && (
-                    <p className="text-black text-xs mt-1">
-                      Valid for {Math.round((paymentInfo.expiry - Date.now()) / 60000)} minutes
-                    </p>
+                  <p className="text-black text-xs mt-2">Scan with any UPI app to pay ₹{amount}</p>
+                  <p className="text-black text-xs">To: {recipient}</p>
+                  {description && (
+                    <p className="text-black text-xs">Note: {description}</p>
                   )}
                 </div>
               </div>

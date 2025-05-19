@@ -115,7 +115,7 @@ export const OfflineTransactionProvider: React.FC<{ children: React.ReactNode }>
   };
 
   const generateQR = (amount: number, description: string) => {
-    return generateOfflinePaymentQR(amount, description);
+    return(amount, description);
   };
 
   const processPayment = (qrData: string) => {

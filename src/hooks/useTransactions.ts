@@ -13,7 +13,7 @@ interface Transaction {
   transactionDate: string;
 }
 
-const API_BASE_URL = 'https://upiconnect.onrender.com';
+const API_BASE_URL = 'http://localhost:3000';
 
 export const useTransactions = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);

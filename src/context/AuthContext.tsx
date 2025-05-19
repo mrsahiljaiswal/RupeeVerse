@@ -36,7 +36,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const fetchUserData = async (token: string) => {
     try {
-      const response = await axios.get<CurrentUserResponse>('https://upiconnect.onrender.com/api/auth/current-user', {
+      const response = await axios.get<CurrentUserResponse>('http://localhost:3000/api/auth/current-user', {
         headers: {
           Authorization: `Bearer ${token}`
         }

@@ -1,13 +1,96 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, IndianRupee } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import SendMoneyDialog from '@/components/SendMoneyDialog';
+import { getSecureAuthData } from '@/utils/secureAuthStorage';
+
+interface BalanceResponse {
+  status: string;
+  message: string;
+  data: {
+    username: string;
+    email: string;
+    finalBalance: number;
+  };
+  timestamp: string;
+}
 
 const HeroSection = () => {
   const { toast } = useToast();
   const [showSendDialog, setShowSendDialog] = useState(false);
+  const [balance, setBalance] = useState<number | null>(null);
+  const [lastUpdated, setLastUpdated] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  const fetchBalance = async () => {
+    try {
+      const secureData = getSecureAuthData();
+      if (!secureData?.token) {
+        console.log('No auth token found, showing masked balance'); // Debug log
+        setBalance(null);
+        setLoading(false);
+        return;
+      }
+
+      console.log('Fetching balance...'); // Debug log
+      const response = await fetch('http://localhost:3000/api/balance', {
+        headers: {
+          'Authorization': `Bearer ${secureData.token}`
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch balance');
+      }
+
+      const data: BalanceResponse = await response.json();
+      console.log('Balance data:', data); // Debug log
+
+      if (data.status === 'success') {
+        setBalance(data.data.finalBalance);
+        setLastUpdated(data.timestamp);
+      } else {
+        throw new Error('Invalid response format');
+      }
+    } catch (error) {
+      console.error('Error fetching balance:', error);
+      toast({
+        title: "Error",
+        description: "Failed to fetch balance",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    // Initial fetch
+    fetchBalance();
+
+    // Set up polling every 3 seconds
+    const intervalId = setInterval(fetchBalance, 3000);
+
+    // Cleanup interval on component unmount
+    return () => clearInterval(intervalId);
+  }, [toast]);
+
+  const formatLastUpdated = (timestamp: string) => {
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+
+    if (diffInSeconds < 60) {
+      return `${diffInSeconds} seconds ago`;
+    } else if (diffInSeconds < 3600) {
+      const minutes = Math.floor(diffInSeconds / 60);
+      return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
+    } else {
+      return date.toLocaleString();
+    }
+  };
 
   const scrollToUPISection = () => {
     const section = document.querySelector('#offline-upi-section');
@@ -34,7 +117,7 @@ const HeroSection = () => {
         <div className="flex flex-col md:flex-row items-center gap-12 md:gap-16">
           <div className="flex-1 text-center md:text-left">
             <div className="inline-block mb-4 px-3 py-1 rounded-full bg-white/10 backdrop-blur-sm border border-white/10">
-              <span className="text-sm font-medium text-primary">Offline-First Banking</span>
+              <span className="text-sm font-medium text-primary">Hybrid-First Banking</span>
             </div>
             
             <h1 className="font-poppins font-bold text-4xl md:text-5xl lg:text-6xl mb-6 leading-tight">
@@ -43,7 +126,7 @@ const HeroSection = () => {
             </h1>
             
             <p className="text-lg text-muted-foreground mb-8 md:max-w-lg">
-              Secure transactions, easy loan applications, and financial learning - all accessible offline for rural communities.
+              Secure transactions, find nearest bank and ATM, and financial learning - all accessible offline for rural communities.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
@@ -71,14 +154,36 @@ const HeroSection = () => {
                   <div className="flex justify-between items-center mb-6">
                     <div>
                       <h3 className="font-poppins font-medium text-lg text-white">Your Balance</h3>
-                      <p className="text-muted-foreground text-sm">Available offline</p>
+                      <div className="flex items-center gap-2">
+                        <IndianRupee className="h-4 w-4 text-muted-foreground" />
+                        {loading && (
+                          <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+                        )}
+                      </div>
                     </div>
-                    <div className="badge badge-purple">Offline</div>
+                    <div className="badge badge-purple">Active</div>
                   </div>
                   
                   <div className="mb-8">
-                    <h2 className="font-poppins font-bold text-3xl text-white">₹ * * * * *</h2>
-                    <p className="text-muted-foreground text-sm">Last updated: Today, 4:30 PM</p>
+                    {loading ? (
+                      <div className="h-8 w-32 bg-white/5 animate-pulse rounded" />
+                    ) : balance !== null ? (
+                      <>
+                        <h2 className="font-poppins font-bold text-3xl text-white">
+                          ₹{balance.toLocaleString()}
+                        </h2>
+                        {lastUpdated && (
+                          <p className="text-muted-foreground text-sm">
+                            Last updated: {formatLastUpdated(lastUpdated)}
+                          </p>
+                        )}
+                      </>
+                    ) : (
+                      <>
+                        <h2 className="font-poppins font-bold text-3xl text-white">₹ * * * * *</h2>
+                        <p className="text-muted-foreground text-sm">Sign in to view balance</p>
+                      </>
+                    )}
                   </div>
                   
                   <div className="flex gap-3">
@@ -88,9 +193,7 @@ const HeroSection = () => {
                     >
                       Send Money
                     </Button>
-                    <Button variant="outline" className="flex-1 border-white/10 hover:bg-white/5">
-                      Request
-                    </Button>
+                    
                   </div>
                 </div>
               </div>
@@ -99,7 +202,6 @@ const HeroSection = () => {
                 <div className="w-8 h-8 rounded-full card-gradient flex items-center justify-center text-primary">Ai</div>
                 <div>
                   <p className="text-sm font-medium">Rupee AI</p>
-                  <p className="text-xs text-muted-foreground">Voice Assistant</p>
                 </div>
                 <Link to="/rupee-ai">
                   <Button className="absolute top-0 right-0 p-1 text-xs">Try Now</Button>

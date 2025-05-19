@@ -39,8 +39,8 @@ const NotificationCard: React.FC<NotificationCardProps> = ({
         className={cn(
           "p-4 transition-all duration-200 cursor-pointer border-0",
           notification.seen
-            ? "card-gradient"
-            : "purple-gradient"
+            ? "bg-black/30 text-gray-400"
+            : "bg-black text-white"
         )}
         onClick={() => onClick(notification)}
       >
@@ -48,7 +48,10 @@ const NotificationCard: React.FC<NotificationCardProps> = ({
           <div className="flex justify-between items-start">
             <div className="space-y-1">
               <div className="flex items-center gap-2">
-                <p className="text-sm font-medium font-poppins">
+                <p className={cn(
+                  "text-sm font-medium font-poppins",
+                  notification.seen ? "text-gray-400" : "text-white"
+                )}>
                   {notification.type === 'request_sent' ? 'Payment Request' : 'Transaction Update'}
                 </p>
                 {!notification.seen && (
@@ -57,34 +60,50 @@ const NotificationCard: React.FC<NotificationCardProps> = ({
                   </Badge>
                 )}
               </div>
-              <p className="text-xs text-muted-foreground font-inter">
+              <p className={cn(
+                "text-xs font-inter",
+                notification.seen ? "text-gray-500" : "text-gray-300"
+              )}>
                 {new Date(notification.createdAt).toLocaleString()}
               </p>
             </div>
             <div className="text-right">
-              <p className="text-lg font-bold font-poppins text-primary">
+              <p className={cn(
+                "text-lg font-bold font-poppins",
+                notification.seen ? "text-gray-400" : "text-white"
+              )}>
                 ₹{extractAmount(notification.message)}
               </p>
-              <p className="text-sm text-muted-foreground font-inter">
+              <p className={cn(
+                "text-sm font-inter",
+                notification.seen ? "text-gray-500" : "text-gray-300"
+              )}>
                 {extractName(notification.message)}
               </p>
             </div>
           </div>
 
-          <p className="text-sm text-muted-foreground font-inter">{notification.message}</p>
+          <p className={cn(
+            "text-sm font-inter",
+            notification.seen ? "text-gray-500" : "text-gray-300"
+          )}>
+            {notification.message}
+          </p>
 
           <div className="flex gap-2 mt-2">
-            <Button
-              size="sm"
-              variant={notification.seen ? "outline" : "default"}
-              onClick={(e) => {
-                e.stopPropagation();
-                onMarkAsRead(notification._id);
-              }}
-              className="flex-1 font-inter"
-            >
-              {notification.seen ? 'Mark as Unread' : 'Mark as Read'}
-            </Button>
+            {!notification.seen && (
+              <Button
+                size="sm"
+                variant="default"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onMarkAsRead(notification._id);
+                }}
+                className="flex-1 font-inter"
+              >
+                Mark as Read
+              </Button>
+            )}
             <Button
               size="sm"
               variant="destructive"
@@ -92,7 +111,7 @@ const NotificationCard: React.FC<NotificationCardProps> = ({
                 e.stopPropagation();
                 onDismiss(notification._id);
               }}
-              className="flex-1 font-inter"
+              className={cn("font-inter", notification.seen ? "w-full" : "flex-1")}
             >
               Dismiss
             </Button>
